@@ -1,0 +1,117 @@
+using System;
+using System.Collections.Generic;
+
+// Classe para representar um veículo estacionado
+class Veiculo
+{
+    public string Placa { get; set; }
+    public DateTime HorarioEntrada { get; set; }
+
+    // Outros detalhes do veículo podem ser adicionados aqui, como o tipo do veículo, modelo, etc.
+}
+
+// Classe principal do programa
+class Program
+{
+    static void Main()
+    {
+        // Lista para armazenar os veículos estacionados
+        List<Veiculo> veiculosEstacionados = new List<Veiculo>();
+
+        while (true)
+        {
+            Console.WriteLine("1. Entrada de Veículo");
+            Console.WriteLine("2. Saída de Veículo");
+            Console.WriteLine("3. Sair do Programa");
+
+            // Ler a escolha do usuário
+            int escolha = int.Parse(Console.ReadLine());
+
+            switch (escolha)
+            {
+                case 1:
+                    // Entrada de Veículo
+                    EntradaVeiculo(veiculosEstacionados);
+                    break;
+
+                case 2:
+                    // Saída de Veículo
+                    SaidaVeiculo(veiculosEstacionados);
+                    break;
+
+                case 3:
+                    // Sair do Programa
+                    Environment.Exit(0);
+                    break;
+
+                default:
+                    Console.WriteLine("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+    }
+
+    // Método para registrar a entrada de um veículo
+    static void EntradaVeiculo(List<Veiculo> veiculosEstacionados)
+    {
+        Console.WriteLine("Digite a placa do veículo:");
+        string placa = Console.ReadLine();
+
+        // Verificar se o veículo já está estacionado
+        if (VeiculoEstacionado(veiculosEstacionados, placa))
+        {
+            Console.WriteLine("Veículo já está estacionado.");
+        }
+        else
+        {
+            Veiculo veiculo = new Veiculo
+            {
+                Placa = placa,
+                HorarioEntrada = DateTime.Now
+            };
+
+            veiculosEstacionados.Add(veiculo);
+            Console.WriteLine($"Veículo {placa} estacionado com sucesso.");
+        }
+    }
+
+    // Método para registrar a saída de um veículo e calcular o valor a ser pago
+    static void SaidaVeiculo(List<Veiculo> veiculosEstacionados)
+    {
+        Console.WriteLine("Digite a placa do veículo:");
+        string placa = Console.ReadLine();
+
+        // Verificar se o veículo está estacionado
+        Veiculo veiculo = veiculosEstacionados.Find(v => v.Placa == placa);
+
+        if (veiculo == null)
+        {
+            Console.WriteLine("Veículo não encontrado no estacionamento.");
+        }
+        else
+        {
+            TimeSpan tempoEstacionado = DateTime.Now - veiculo.HorarioEntrada;
+            double valorAPagar = CalcularValorEstacionamento(tempoEstacionado);
+
+            Console.WriteLine($"Tempo estacionado: {tempoEstacionado.TotalHours} horas");
+            Console.WriteLine($"Valor a pagar: R${valorAPagar:F2}");
+
+            // Remover o veículo da lista após a saída
+            veiculosEstacionados.Remove(veiculo);
+        }
+    }
+
+    // Método para verificar se um veículo já está estacionado
+    static bool VeiculoEstacionado(List<Veiculo> veiculosEstacionados, string placa)
+    {
+        return veiculosEstacionados.Exists(v => v.Placa == placa);
+    }
+
+    // Método para calcular o valor do estacionamento com base no tempo estacionado
+    static double CalcularValorEstacionamento(TimeSpan tempoEstacionado)
+    {
+        // Lógica para calcular o valor pode ser ajustada conforme necessário
+        const double precoPorHora = 5.00;
+        return tempoEstacionado.TotalHours * precoPorHora;
+    }
+}
