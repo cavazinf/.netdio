@@ -1,0 +1,77 @@
+Passo 1: Definir a Classe de Tarefa
+csharp
+Copy code
+public class Tarefa
+{
+    public int TarefaId { get; set; }
+    public string Nome { get; set; }
+    public DateTime DataAgendamento { get; set; }
+    public bool Concluida { get; set; }
+}
+Passo 2: Configurar o Contexto do Banco de Dados
+csharp
+Copy code
+using Microsoft.EntityFrameworkCore;
+
+public class TarefaDbContext : DbContext
+{
+    public DbSet<Tarefa> Tarefas { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        // Configure a string de conexão com o seu banco de dados
+        optionsBuilder.UseSqlServer("sua-string-de-conexao");
+    }
+}
+Passo 3: Criar e Agendar Tarefas
+csharp
+Copy code
+class Program
+{
+    static void Main()
+    {
+        using (var contexto = new TarefaDbContext())
+        {
+            // Criação de uma nova tarefa
+            var novaTarefa = new Tarefa
+            {
+                Nome = "Limpar o escritório",
+                DataAgendamento = DateTime.Now.AddDays(1),
+                Concluida = false
+            };
+
+            // Adiciona a nova tarefa ao contexto
+            contexto.Tarefas.Add(novaTarefa);
+
+            // Salva as alterações no banco de dados
+            contexto.SaveChanges();
+        }
+    }
+}
+Passo 4: Consultar e Atualizar Tarefas
+csharp
+Copy code
+class Program
+{
+    static void Main()
+    {
+        using (var contexto = new TarefaDbContext())
+        {
+            // Consulta todas as tarefas agendadas
+            var tarefasAgendadas = contexto.Tarefas.ToList();
+
+            foreach (var tarefa in tarefasAgendadas)
+            {
+                Console.WriteLine($"Tarefa: {tarefa.Nome}, Agendada para: {tarefa.DataAgendamento}");
+            }
+
+            // Atualiza o status de uma tarefa para concluída
+            var tarefaParaAtualizar = contexto.Tarefas.FirstOrDefault();
+            if (tarefaParaAtualizar != null)
+            {
+                tarefaParaAtualizar.Concluida = true;
+                contexto.SaveChanges();
+            }
+        }
+    }
+}
