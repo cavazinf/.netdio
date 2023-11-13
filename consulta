@@ -1,0 +1,63 @@
+Exemplo de Modelo de Dados:
+Vamos considerar dois modelos de dados simples:
+
+Tabela "Clientes":
+
+sql
+Copy code
+CREATE TABLE Clientes (
+    ClienteID INT PRIMARY KEY,
+    Nome NVARCHAR(100),
+    Email NVARCHAR(100)
+);
+Tabela "Pedidos":
+
+sql
+Copy code
+CREATE TABLE Pedidos (
+    PedidoID INT PRIMARY KEY,
+    ClienteID INT FOREIGN KEY REFERENCES Clientes(ClienteID),
+    Produto NVARCHAR(100),
+    Quantidade INT
+);
+Exemplos de Consultas Relacionais:
+1. Selecionar todos os clientes e seus pedidos:
+sql
+Copy code
+SELECT c.Nome, p.PedidoID, p.Produto
+FROM Clientes c
+JOIN Pedidos p ON c.ClienteID = p.ClienteID;
+2. Contar o número total de pedidos por cliente:
+sql
+Copy code
+SELECT c.Nome, COUNT(p.PedidoID) AS TotalPedidos
+FROM Clientes c
+LEFT JOIN Pedidos p ON c.ClienteID = p.ClienteID
+GROUP BY c.Nome;
+3. Selecionar clientes que não fizeram pedidos:
+sql
+Copy code
+SELECT c.Nome
+FROM Clientes c
+LEFT JOIN Pedidos p ON c.ClienteID = p.ClienteID
+WHERE p.PedidoID IS NULL;
+4. Calcular o total gasto por cada cliente:
+sql
+Copy code
+SELECT c.Nome, SUM(p.Quantidade) AS TotalGasto
+FROM Clientes c
+JOIN Pedidos p ON c.ClienteID = p.ClienteID
+GROUP BY c.Nome;
+5. Selecionar clientes que fizeram mais de 3 pedidos:
+sql
+Copy code
+SELECT c.Nome
+FROM Clientes c
+JOIN Pedidos p ON c.ClienteID = p.ClienteID
+GROUP BY c.Nome
+HAVING COUNT(p.PedidoID) > 3;
+Estes são apenas exemplos básicos. As consultas relacionais podem ser adaptadas com base na complexidade do seu modelo de dados. Certifique-se de ajustar as condições de junção (JOIN) e as cláusulas de filtro conforme necessário para atender aos requisitos específicos do seu sistema.
+
+
+
+
