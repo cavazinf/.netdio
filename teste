@@ -1,1 +1,79 @@
+1. Configurar o Projeto:
+Certifique-se de que o projeto que você deseja testar tem uma referência ao NUnit. Você pode adicionar o NUnit ao seu projeto usando o NuGet Package Manager no Visual Studio.
 
+bash
+Copy code
+Install-Package NUnit
+Install-Package NUnit3TestAdapter
+2. Escrever Testes Unitários:
+Vamos supor que você tenha uma classe Calculadora com um método Somar que você deseja testar.
+
+csharp
+Copy code
+public class Calculadora
+{
+    public int Somar(int a, int b)
+    {
+        return a + b;
+    }
+}
+Agora, crie uma classe de teste usando o NUnit:
+
+csharp
+Copy code
+using NUnit.Framework;
+
+[TestFixture]
+public class CalculadoraTests
+{
+    [Test]
+    public void Somar_DeveRetornarSomaCorreta()
+    {
+        // Arrange
+        var calculadora = new Calculadora();
+
+        // Act
+        int resultado = calculadora.Somar(2, 3);
+
+        // Assert
+        Assert.AreEqual(5, resultado);
+    }
+}
+3. Configurar Mocks (Opcional):
+Se o seu código depender de serviços externos ou dependências, você pode usar o Moq para criar mocks. Por exemplo, se tivermos uma interface IServicoExterno:
+
+csharp
+Copy code
+public interface IServicoExterno
+{
+    int ObterNumero();
+}
+Podemos criar um mock para testar a classe Calculadora:
+
+csharp
+Copy code
+using Moq;
+
+[Test]
+public void Somar_DeveChamarServicoExterno()
+{
+    // Arrange
+    var mockServico = new Mock<IServicoExterno>();
+    mockServico.Setup(x => x.ObterNumero()).Returns(3);
+
+    var calculadora = new Calculadora(mockServico.Object);
+
+    // Act
+    int resultado = calculadora.Somar(2);
+
+    // Assert
+    Assert.AreEqual(5, resultado);
+    mockServico.Verify(x => x.ObterNumero(), Times.Once);
+}
+4. Executar Testes:
+No Visual Studio, você pode executar os testes selecionando "Testar" > "Todos os Testes" no menu. Certifique-se de que todos os testes passam corretamente.
+
+5. Integrar com Ferramentas de Build (Opcional):
+Se você estiver usando um sistema de build automatizado, como Azure DevOps, Jenkins ou GitHub Actions, configure os testes unitários para serem executados automaticamente durante o processo de build.
+
+Essas são diretrizes gerais, e você pode ajustar conforme necessário. Lembre-se de que os testes unitários devem cobrir casos de sucesso e casos de borda, garantindo uma cobertura abrangente do código.
